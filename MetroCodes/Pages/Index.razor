@@ -68,15 +68,11 @@
     {
         var qrCodeGenerator = new QRCodeGenerator();
         QRCodeData qrCodeData = qrCodeGenerator.CreateQrCode("WTPWarszawa_" + _radioValue, QRCodeGenerator.ECCLevel.M);
-        var qrCode = new QRCode(qrCodeData);
 
-        var image = qrCode.GetGraphic(20);
-        var ms = new MemoryStream();
-        image.Save(ms, ImageFormat.Jpeg);
-        byte[] byteImage = ms.ToArray();
-        var sigBase64= Convert.ToBase64String(byteImage);
+        Base64QRCode qrCode = new Base64QRCode(qrCodeData);
+        string qrCodeImageAsBase64 = qrCode.GetGraphic(20);
 
-        _qr.Src = "data:image/bmp;base64, " + sigBase64;
+        _qr.Src = "data:image/bmp;base64, " + qrCodeImageAsBase64;
 
 
         _qr.Shown = true;
