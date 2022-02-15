@@ -66,14 +66,7 @@
 
     private void GenerateQrCode()
     {
-        var qrCodeGenerator = new QRCodeGenerator();
-        QRCodeData qrCodeData = qrCodeGenerator.CreateQrCode("WTPWarszawa_" + _radioValue, QRCodeGenerator.ECCLevel.M);
-
-        Base64QRCode qrCode = new Base64QRCode(qrCodeData);
-        string qrCodeImageAsBase64 = qrCode.GetGraphic(20);
-
-        _qr.Src = "data:image/bmp;base64, " + qrCodeImageAsBase64;
-
+        _qr.Src = "https://api.qrserver.com/v1/create-qr-code/?data=" + "WTPWarszawa_" + _radioValue;
 
         _qr.Shown = true;
     }
