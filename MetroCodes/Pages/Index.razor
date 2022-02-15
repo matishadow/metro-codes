@@ -1,0 +1,85 @@
+@page "/"
+@using QRCoder
+@using System.Drawing.Imaging
+@using System.IO
+
+@foreach (var station in _stations)
+{
+    <div>
+        <input type="radio" name="technology" id="@station.Value" value="@station.Value" @onchange="RadioSelection" checked=@(_radioValue.Equals(station.Value, StringComparison.OrdinalIgnoreCase))/>
+        <label for="@station.Value">@station.Name</label>
+    </div>
+}
+
+<br/>
+<button @onclick="@(GenerateQrCode)">Generate QR Code</button>
+<br/>
+<img src="@_qr.Src">
+
+
+@code {
+    readonly Image _qr = new();
+
+    string _radioValue = "aspnetcore";
+
+    void RadioSelection(ChangeEventArgs args)
+    {
+        _radioValue = args.Value?.ToString();
+    }
+
+    readonly List<Station> _stations = new()
+    {
+        new Station { Value = "M19101", Name = "Kabaty" },
+        new Station { Value = "M19102", Name = "Natolin" },
+        new Station { Value = "M19103", Name = "Imielin" },
+        new Station { Value = "M19104", Name = "Stokłosy" },
+        new Station { Value = "M19105", Name = "Ursynów" },
+        new Station { Value = "M19106", Name = "Służew" },
+        new Station { Value = "M19107", Name = "Wilanowska" },
+        new Station { Value = "M19108", Name = "Wierzbno" },
+        new Station { Value = "M19109", Name = "Racławicka" },
+        new Station { Value = "M19110", Name = "Pole Mokotowskie" },
+        new Station { Value = "M19111", Name = "Politechnika" },
+        new Station { Value = "M19113", Name = "Centrum" },
+        new Station { Value = "M19114", Name = "Świętokrzyska" },
+        new Station { Value = "M19115", Name = "Ratusz Arsenał" },
+        new Station { Value = "M19117", Name = "Dworzec Gdański" },
+        new Station { Value = "M19118", Name = "Plac Wilsona" },
+        new Station { Value = "M19119", Name = "Marymont" },
+        new Station { Value = "M19120", Name = "Słodowiec" },
+        new Station { Value = "M19121", Name = "Stare Bielany" },
+        new Station { Value = "M19122", Name = "Wawrzyszew" },
+        new Station { Value = "M19123", Name = "Młociny" },
+    };
+
+    public class Station
+    {
+        public string Name { get; set; }
+        public string Value { get; set; }
+    }
+
+    public class Image
+    {
+        public bool Shown { get; set; }
+        public string Src { get; set; } = "img/placeholder.png";
+    }
+
+    private void GenerateQrCode()
+    {
+        var qrCodeGenerator = new QRCodeGenerator();
+        QRCodeData qrCodeData = qrCodeGenerator.CreateQrCode("WTPWarszawa_" + _radioValue, QRCodeGenerator.ECCLevel.M);
+        var qrCode = new QRCode(qrCodeData);
+
+        var image = qrCode.GetGraphic(20);
+        var ms = new MemoryStream();
+        image.Save(ms, ImageFormat.Jpeg);
+        byte[] byteImage = ms.ToArray();
+        var sigBase64= Convert.ToBase64String(byteImage);
+
+        _qr.Src = "data:image/bmp;base64, " + sigBase64;
+
+
+        _qr.Shown = true;
+    }
+
+}
